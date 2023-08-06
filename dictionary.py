@@ -1,17 +1,18 @@
 import damerau_levenshtein
 import pickle
+from pathlib import Path
 
 
 class Dictionary:
     def __init__(self):
         self._local_dictionary = set()
         self._generate_local_dictionary()
-        with open('dictionary.pickle', 'rb') as f:
+        with open(Path.cwd() / 'dictionary.pickle', 'rb') as f:
             self.dictionary = pickle.load(f)
         self._max_number_differences = 3
 
     def _generate_local_dictionary(self):
-        with open('russian.txt', encoding='utf-8') as f:
+        with open(Path.cwd() / 'russian.txt', encoding='utf-8') as f:
             for word in f:
                 self._local_dictionary.add(word.rstrip('\n'))
 

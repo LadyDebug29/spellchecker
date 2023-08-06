@@ -1,3 +1,4 @@
+from pathlib import Path
 from dictionary import Dictionary
 from string import punctuation
 
@@ -8,7 +9,7 @@ class FileSpellchecker:
         self.path = path
 
     def get_options(self):
-        with open(self.path, 'r', encoding='utf-8') as f:
+        with open(Path.cwd() / self.path, 'r', encoding='utf-8') as f:
             options = dict()
             for text in f:
                 words = text.translate(str.maketrans('', '', punctuation)).split()
