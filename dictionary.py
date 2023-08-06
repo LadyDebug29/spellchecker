@@ -1,38 +1,34 @@
-import sqlite3 as sl
+import damerau_levenshtein
+import pickle
+
 
 class Dictionary:
-    def __init__(self, base="russian.txt"):
-        self.local_dictionary = set()
-        self.dictionary_options = dict()
-        self._generate_local_dictionary(base)
+    def __init__(self):
+        self._local_dictionary = set()
+        self._generate_local_dictionary()
+        with open('dictionary.pickle', 'rb') as f:
+            self.dictionary = pickle.load(f)
+        self._max_number_differences = 3
 
-    # def generate_base():
-    #     con = sl.connect('dictionary.db')
-    #     cursor = con.cursor()
-    #
-    #     cursor.execute("""
-    #             create table if not exists Words (
-    #                 id integer primary key autoincrement,
-    #                 word varchar(32) not null
-    #             );
-    #         """)
-    #
-    #     cursor.execute("""
-    #                 create table if not exists VariantsWordForms (
-    #                     variant_id integer primary key autoincrement,
-    #                     word_id integer,
-    #                     variants varchar(32) not null,
-    #                     foreign key (word_id) references Words (id)
-    #                 );
-    #             """)
+    def _generate_local_dictionary(self):
+        with open('russian.txt', encoding='utf-8') as f:
+            for word in f:
+                self._local_dictionary.add(word.rstrip('\n'))
 
-    def _generate_local_dictionary(self, base):
-        with open(base) as f:
-            for row in f:
-                self.local_dictionary.add(row.rstrip('\n'))
+    def check_word_in_dictionary(self, word):
+        return word in self._local_dictionary
 
-    def add_variants(self, incorrect_word, *variants):
-        if incorrect_word not in self.dictionary_options:
-            self.dictionary_options[incorrect_word] = set(variants)
-        else:
-            self.dictionary_options[incorrect_word].add(variants)
+    def get_candidates(self, word):
+        candidates = []
+        stack = [self.dictionary[0]]
+        while len(stack) != 0:
+            current_node = stack.pop()
+            dist = damerau_levenshtein.calculate_distance(current_node.val, word)
+            if dist <= self._max_number_differences:
+                candidates.append(current_node.val)
+            for dist_child, number_next_node in current_node.children.items():
+                if dist - self._max_number_differences <= dist_child <= dist + self._max_number_differences:
+                    stack.append(self.dictionary[number_next_node])
+        if len(candidates) == 1:
+            return []
+        return candidates
