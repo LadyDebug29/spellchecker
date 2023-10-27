@@ -11,15 +11,16 @@ def clear():
 
 
 def print_options(options):
-    if len(options) == 0:
-        stdout.write("Ошибок нет. Все корректно." + '\n')
-        return
-    stdout.write(f'Найдено ошибок: {len(options)} ' + '\n')
-    for word in options:
-        stdout.write(f'Ошибка в слове "{word}".'
-                     f'Возможно Вы имели в виду:' + '\n')
-        for option in options[word]:
-            stdout.write(f'    {option}' + '\n')
+    if options:
+        stdout.write(f'Найдено ошибок: {len(options)} ' + '\n')
+        for word in options:
+            stdout.write(f'Ошибка в слове "{word}".'
+                         f'Возможно Вы имели в виду:' + '\n')
+            for option in options[word]:
+                stdout.write(f'    {option}' + '\n')
+    stdout.write("Ошибок нет. Все корректно." + '\n')
+    return
+
 
 
 def print_mode_selection():

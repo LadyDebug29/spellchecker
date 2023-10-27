@@ -1,6 +1,7 @@
 import damerau_levenshtein
 import pickle
 from pathlib import Path
+from highlighter import highlight_different_characters
 
 
 class Dictionary:
@@ -26,7 +27,7 @@ class Dictionary:
             current_node = stack.pop()
             dist = damerau_levenshtein.calculate_distance(current_node.val, word)
             if dist <= self._max_number_differences:
-                candidates.append(current_node.val)
+                candidates.append(highlight_different_characters(word, current_node.val))
             for dist_child, number_next_node in current_node.children.items():
                 if dist - self._max_number_differences <= dist_child <= dist + self._max_number_differences:
                     stack.append(self.dictionary[number_next_node])
